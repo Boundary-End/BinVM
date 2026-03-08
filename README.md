@@ -1,5 +1,6 @@
-# Attention
-This project is only designed to run in Termux
+# Note
+This project is designed to run **only on Termux**.
+
 
 # BinVM
 A lightweight, experimental virtual machine designed for high-performance bytecode execution.
@@ -24,9 +25,6 @@ binvm
 ## Usage
 ```bash
 cat > test.b << 'EOF'
-; 'H' (ASCII 72) ;
-; Correct test program ;
-
 ; 't' (ASCII 116) ;
 00000100
 00000100
