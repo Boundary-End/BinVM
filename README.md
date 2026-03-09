@@ -1,7 +1,3 @@
-# Note
-This project is designed to run **only on Termux**.
-
-
 # BinVM
 A lightweight, experimental virtual machine designed for high-performance bytecode execution.
 
