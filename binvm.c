@@ -51,11 +51,11 @@ typedef struct {
     int comment_start_col;
     int auto_newline;
     int last_char;
-} BinaryVM;
+} BinVM;
 
 // Initialize VM
-BinaryVM* vm_create(void) {
-    BinaryVM *vm = malloc(sizeof(BinaryVM));
+BinVM* vm_create(void) {
+    BinVM *vm = malloc(sizeof(BinVM));
     vm->code = NULL;
     vm->code_len = 0;
     vm->ip = 0;
@@ -74,7 +74,7 @@ BinaryVM* vm_create(void) {
 }
 
 // Free VM
-void vm_free(BinaryVM *vm) {
+void vm_free(BinVM *vm) {
     if (!vm) return;
     free(vm->code);
     free(vm->memory);
@@ -83,7 +83,7 @@ void vm_free(BinaryVM *vm) {
 }
 
 // Load binary file
-ErrorCode vm_load(BinaryVM *vm, const char *filename) {
+ErrorCode vm_load(BinVM *vm, const char *filename) {
     FILE *f = fopen(filename, "rb");
     if (!f) return ERR_INVALID_BINARY;
     
@@ -106,7 +106,7 @@ ErrorCode vm_load(BinaryVM *vm, const char *filename) {
 }
 
 // Parse comments (very strict)
-ErrorCode parse_comment(BinaryVM *vm, const char *input, int *pos) {
+ErrorCode parse_comment(BinVM *vm, const char *input, int *pos) {
     if (input[*pos] != ';') return ERR_OK;
     
     // Comment start
@@ -139,7 +139,7 @@ ErrorCode parse_comment(BinaryVM *vm, const char *input, int *pos) {
 }
 
 // Execute
-ErrorCode vm_run(BinaryVM *vm) {
+ErrorCode vm_run(BinVM *vm) {
     while (vm->ip < vm->code_len) {
         unsigned char instr = vm->code[vm->ip];
         
@@ -232,7 +232,7 @@ ErrorCode vm_run(BinaryVM *vm) {
 
 // Run binary file
 ErrorCode run_binary_file(const char *filename) {
-    BinaryVM *vm = vm_create();
+    BinVM *vm = vm_create();
     ErrorCode err = vm_load(vm, filename);
     
     if (err != ERR_OK) {
@@ -262,7 +262,6 @@ ErrorCode compile_to_binary(const char *input_file, const char *output_file) {
         return ERR_INVALID_BINARY;
     }
     
-    BinaryVM *vm = vm_create();
     char line[1024];
     int in_comment = 0;
     int line_num = 0;
@@ -281,7 +280,6 @@ ErrorCode compile_to_binary(const char *input_file, const char *output_file) {
                         printf("Error: Empty comment at line %d\n", line_num);
                         fclose(in);
                         fclose(out);
-                        vm_free(vm);
                         return ERR_EMPTY_COMMENT;
                     }
                 } else {
@@ -315,13 +313,11 @@ ErrorCode compile_to_binary(const char *input_file, const char *output_file) {
         printf("Error: Unclosed comment at line %d\n", line_num);
         fclose(in);
         fclose(out);
-        vm_free(vm);
         return ERR_UNCLOSED_COMMENT;
     }
     
     fclose(in);
     fclose(out);
-    vm_free(vm);
     return ERR_OK;
 }
 
@@ -331,10 +327,10 @@ int main(int argc, char *argv[]) {
     
     if (argc < 2) {
         printf("Usage:\n");
-        printf("  binary run <file.bin>          - Execute binary file\n");
-        printf("  binary run -n <file.bin>       - Execute binary file (no auto-newline)\n");
-        printf("  binary compile <file.txt>      - Compile text to binary\n");
-        printf("  binary compile <file.txt> -o <file.bin>\n");
+        printf("  binvm run <file.bin>          - Execute binary file\n");
+        printf("  binvm run -n <file.bin>       - Execute binary file (no auto-newline)\n");
+        printf("  binvm compile <file.txt>      - Compile text to binary\n");
+        printf("  binvm compile <file.txt> -o <file.bin>\n");
         return 1;
     }
     
@@ -355,7 +351,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
         
-        BinaryVM *vm = vm_create();
+        BinVM *vm = vm_create();
         vm->auto_newline = auto_newline;
         
         ErrorCode err = vm_load(vm, filename);
